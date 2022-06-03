@@ -6,6 +6,7 @@ import "hardhat/console.sol";
 contract PullPaymentAuction {
     address highestBidder;
     uint highestBid;
+    mapping (address => uint) previousBids;
 
     //
     // CHALLENGE: FIX THE CODE BELOW EMPLOYING THE PULL-PAYMENT PATTERN. NEW CONTRACT
@@ -15,9 +16,7 @@ contract PullPaymentAuction {
         require(msg.value >= highestBid);
 
         if (highestBidder != address(0)) {
-            // if this call consistently fails, no one else can bid
-            (bool success, bytes memory payload) = highestBidder.call{value: highestBid}("");
-            require(success, string(payload)); // if this call consistently fails, no one else can bid
+            previousBids[highestBidder] += highestBid;
         }
 
         highestBidder = msg.sender;
@@ -28,5 +27,11 @@ contract PullPaymentAuction {
     // CHALLENGE: IMPLEMENT THE CODE BELOW AS PART OF THE PULL-PAYMENT PATTERN
     //
     function withdrawRefund() external {
+        require(previousBids[msg.sender] > 0);
+
+        uint amount = previousBids[msg.sender];
+        previousBids[msg.sender] = 0;
+        
+        payable(msg.sender).transfer(amount);
     }
 }

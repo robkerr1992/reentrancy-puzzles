@@ -35,6 +35,8 @@ describe('EasyBank', function () {
 
     before(async function () {
       thiefBeginningBalance = await provider.getBalance(thief.address);
+      console.log('thiefBeginningBalance')
+      console.log(thiefBeginningBalance)
     });
 
     before(async function () {

